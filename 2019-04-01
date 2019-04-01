@@ -1,5 +1,5 @@
-- 今天遇到了一种使用注解进行批量插入数据的知识点
-<script>
+-今天遇到了一种使用注解进行批量插入数据的知识点
+'''
 @Insert({
 		 "<script>",
 		 "insert into metric_data_t(measure_time, metric_code,  value, producer_code, device_sn,  channel, metric_id) values ",
@@ -8,4 +8,5 @@
 		 "</foreach>",
 		 "</script>"
 		})
-<script>
+'''
+
