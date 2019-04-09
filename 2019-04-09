@@ -1,0 +1,62 @@
+
+@FeignClient(
+    name = "rc-user-service",
+    configuration = {FeignLogConfiguration.class},
+    fallback = UserClient.UserClientFallback.class
+)
+public interface UserClient {
+    @RequestMapping(
+        value = {"/user/getUserDTOList"},
+        method = {RequestMethod.POST}
+    )
+    List<UserDTO> getUserDTOList(@RequestBody List<Long> userIdList);
+
+    @RequestMapping(
+        value = {"/user/getUserDTO/push"},
+        method = {RequestMethod.POST}
+    )
+    UserDTO getUserDTOToPush(@RequestParam("userMobile") String userMobile, @RequestParam("userEmail") String userEmail);
+
+    @RequestMapping(
+        value = {"/user/getUserDTOList/push"},
+        method = {RequestMethod.POST}
+    )
+    List<UserDTO> getUserDTOListToPush(@RequestParam("userMobile") String userMobile, @RequestParam("userEmail") String userEmail, @RequestParam("tenantId") Long tenantId, @RequestParam("start") Integer start, @RequestParam("end") Integer end);
+
+    @RequestMapping(
+        value = {"/user/getCount/push"},
+        method = {RequestMethod.POST}
+    )
+    Integer getCountToPush(@RequestParam("userMobile") String userMobile, @RequestParam("userEmail") String userEmail, @RequestParam("tenantId") Long tenantId);
+
+    @Component
+    public static class UserClientFallback implements UserClient {
+        private Logger logger = LoggerFactory.getLogger(UserClient.UserClientFallback.class);
+
+        public UserClientFallback() {
+        }
+
+        public List<UserDTO> getUserDTOList(List<Long> userIdList) {
+            this.logger.info("查询用户名字失败");
+            return null;
+        }
+
+        public UserDTO getUserDTOToPush(String userMobile, String userEmail) {
+            return null;
+        }
+
+        public List<UserDTO> getUserDTOListToPush(String userMobile, String userEmail, Long tenantId, Integer start, Integer end) {
+            return null;
+        }
+
+        public Integer getCountToPush(String userMobile, String userEmail, Long tenantId) {
+            return null;
+        }
+    }
+}
+
+
+
+Spring Cloud应用在启动时，Feign会扫描标有@FeignClient注解的接口，生成代理，并注册到Spring容器中。
+生成代理时Feign会为每个接口方法创建一个RequetTemplate对象，该对象封装了HTTP请求需要的全部信息，
+请求参数名、请求方法等信息都是在这个过程中确定的，Feign的模板化就体现在这里。
