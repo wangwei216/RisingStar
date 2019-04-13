@@ -33,6 +33,24 @@
   
   《第三章：JUC并发包》
   
- （1）.
-  
-  
+ （1）.ReentrantLock的用法
+      1.
+   
+ （2）.ReentrantLock中的condition类的用法
+      1.其实就是实现的和synchronize中的wait和notify方法一样的功能，但是在ReentrantLock中使用的是await（）和singal（）和singalAll（）来进行代替的
+      2.
+ 
+ （3）.Semaphore信号量的用法
+      其实是通过Semaphore构造器可以指定N个信号量，和指定是否公平锁，通过指定的这个信号量的个数来保证进来的线程的个数只有N个，超过N个的线程都不能执行
+      
+ （4）.ReadWriteLock的用法
+      这个是适用于那种读操作比较多的情况，并且读读之间不互斥，读写之间互斥，写写之间也互斥，为了解决其他的锁无论是全部读还是读写之间他们都是串行化同步的，
+      但是这个读写锁可以最大化的保证了读读操作比较多的效率问题
+      
+（5）.倒计时器CountDownLatch的用法
+
+（6）.循环栅栏CyclicBarrier的用法
+
+（7）.线程阻塞工具：LockSupport的用法
+
+
