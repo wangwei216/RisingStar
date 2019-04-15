@@ -1,2 +1,26 @@
-1. 只需要在想要执行的方法上加上	@Async 注解
+1. 只需要在想要执行的方法上加上	@Async 注解，但是需要在所加注解的方法上的返回值为Future 对象
 2. 然后需要在主启动类上加上一个@EnableAsync//启用springboot多线程 这个注解就可以了
+
+
+业务：
+  （一）.首先在入库服务中的controller层用@KafkaListener注解配置属性，消费者需要先监听topic为rc-metric-data的主题，所在的group为rc-ce-group的
+      （1）.把拿到的数据进行转成对应的实体，其实就是实体中套list，然后把列表又在包到Map中，然后使用多线程去处理这个map。（多线程处理map）
+          1. 然后遍历map数据，又新建一个multiThreadTasksService类来进行专门去处理map中的每一条数据，
+          
+          2. 把处理数据的方法使用多线程的异步进行处理，返回Future对象，同时返回的结果也应该是AsyncResult（其实也就是包装之后的Future对象）
+            1）然后在这个异步处理的方法中在去新建一个multiThreadTasksService的service类新建一个collectToDataBase（）方法，
+              1. 然后在这个方法中，先根据生产商编码先查redis 获取producerRedisVO，看redis中有没有，如果redis中没有的话，去数据库中查，
+              2. 如果redis中有的话，且在redis中的状态有效，通过获取producerRedisVO获取到的生产商id
+              3. 同样再根据前面的套路，再去查deviceRedisVO设备实体的id，同理再去根据设备id再去查metricRedisVOs的，对应放入对应的字段中去
+              4. 如果在metricRedisVOs中的有数据，但是状态是无效的话，那么就会进行多个入库操作 metricRedisVOs
+              5. 最终会返回一个List对象List<MetricDataInfoVO>
+            2）在执行了collectToDataBase（）方法之后，把返回的结果放到了异步的AsyncResult《metricDataInfoVOs》中
+            
+          3. 到这里已经拿到的值，都在map里面
+          
+       （2）. 回到了Controller中，把上一步拿到的map中的数据进行指标入库操作，这里也需要进行判断，
+            1）如果是datebase为1就入库到MySQL数据库中，这里的入库就是一个insert语句完成
+            2）如果是datebase为2的话，就放到openTSDB数据库中，也就是时序数据库中
+               1. 需要建立TSDB的数据库连接和对应的对象，然后组装KafkaAGGVO，然后kafkaTemplate.send("rc-agg-metric-data", gson.toJson(kafkaAGGVO));
+               2. 然后最终需要入库到TSDB数据库中，detailsResult（这个是tsdb自己包装的返回结果类型，这个也是最终返回的结果） = tsdb.putSync(pointListB, DetailsResult.class)
+               
