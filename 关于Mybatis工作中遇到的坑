@@ -1,0 +1,8 @@
+1. Mybatis的第一个坑
+Failed to parse mapping resource:
+'file [D:\GitCode\smart-home-hbez\rc-thing-service\rc-ts-server\target\classes\mybatis\mapper\DeviceExtraInfoMapper.xml]'; 
+nested exception is org.apache.ibatis.builder.BuilderException: 
+Error parsing Mapper XML. Cause: java.lang.IllegalArgumentException: 
+Result Maps collection already contains value for com.rsi.rc.ts.module.device.dao.DeviceExtraInfoMapper.BaseResultMapVO
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:587) ~[spring-beans-5.0.7.RELEASE.jar:5.0.7.RELEASE]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:91) ~[spring-beans-5.0.7.RELEASE.jar:5.0.7.RELEASE]
