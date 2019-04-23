@@ -6,3 +6,10 @@ Error parsing Mapper XML. Cause: java.lang.IllegalArgumentException:
 Result Maps collection already contains value for com.rsi.rc.ts.module.device.dao.DeviceExtraInfoMapper.BaseResultMapVO
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:587) ~[spring-beans-5.0.7.RELEASE.jar:5.0.7.RELEASE]
 	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:91) ~[spring-beans-5.0.7.RELEASE.jar:5.0.7.RELEASE]
+
+
+
+2.第二个坑 
+
+Illegal overloaded getter method with ambiguous type for property producerVO in class class com.rsi.rc.ts.module.device.vo.DeviceVO.  
+This breaks the JavaBeans specification and can cause unpredicatble results.",
