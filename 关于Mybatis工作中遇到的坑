@@ -13,3 +13,11 @@ Result Maps collection already contains value for com.rsi.rc.ts.module.device.da
 
 Illegal overloaded getter method with ambiguous type for property producerVO in class class com.rsi.rc.ts.module.device.vo.DeviceVO.  
 This breaks the JavaBeans specification and can cause unpredicatble results.",
+
+这个是因为在set知道时候使用是public ProducerVO getproducerVO() {
+		return producerVO;
+	}
+
+	public void setproducerVO(ProducerVO producerVO) {
+		this.producerVO = producerVO;
+	}
