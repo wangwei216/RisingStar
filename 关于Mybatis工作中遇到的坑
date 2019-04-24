@@ -31,3 +31,4 @@ This breaks the JavaBeans specification and can cause unpredicatble results.",
 Could not set property 'deviceExtraInfoForGetVO' of 'class com.rsi.rc.ts.module.device.vo.DeviceForUpVO' 
 with value 'com.rsi.rc.ts.module.device.deviceextrainfo.vo.DeviceExtraInfoVO@742e6b9d' 
 Cause: java.lang.IllegalArgumentException: argument type mismatch] with root cause
+  解决办法：是因为对应的resultMap结果集和实体的映射关系没有对应上
