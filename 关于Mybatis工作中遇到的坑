@@ -21,3 +21,6 @@ This breaks the JavaBeans specification and can cause unpredicatble results.",
 	public void setproducerVO(ProducerVO producerVO) {
 		this.producerVO = producerVO;
 	}
+
+
+3.第三个坑是只要是resultMap的结果集的时候，返回的Bean实体都是接受数据的时候用时的实体类型，而不是DAO层使用的实体,切记（因为你是直接就要把数据传到前台）
