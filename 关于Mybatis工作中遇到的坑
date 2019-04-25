@@ -26,6 +26,87 @@ This breaks the JavaBeans specification and can cause unpredicatble results.",
 3.第三个坑是只要是resultMap的结果集的时候，返回的Bean实体都是接受数据的时候用时的实体类型，
 而不是DAO层使用的实体,切记（因为你是直接就要把数据传到前台）
 
+（1）.这个是配置mapper.xml中需要配置的接受前台数据的map集合，这个type类型其实就是必须要和你需要返回跟前台的数据保持一致DeviceForUpVO也就是这个VO对象 
+ <resultMap id="BaseResultMapVO1" type="com.rsi.rc.ts.module.device.vo.DeviceForUpVO">
+        <id column="deviceInfo_deviceId" jdbcType="BIGINT" property="deviceId"/>
+        <result column="deviceInfo_name" jdbcType="VARCHAR" property="name"/>
+        <result column="deviceInfo_description" jdbcType="VARCHAR"
+                property="description"/>
+        <result column="deviceInfo_sn" jdbcType="VARCHAR" property="sn"/>
+        <result column="deviceInfo_deviceSpecId" jdbcType="BIGINT"
+                property="deviceSpecId"/>
+        <result column="deviceInfo_locationId" jdbcType="BIGINT"
+                property="locationId"/>
+        <result column="deviceInfo_OrgId" jdbcType="BIGINT" property="orgId"/>
+        <association property="deviceExtraInfoForGetVO"
+                     javaType="com.rsi.rc.ts.module.device.deviceextrainfo.vo.DeviceExtraInfoForGetVO"
+                     resultMap="com.rsi.rc.ts.module.device.dao.DeviceExtraInfoMapper.BaseResultMapQueryVO"></association>
+        <association property="producerVO"
+                     javaType="com.rsi.rc.ts.module.producer.vo.ProducerVO"
+                     resultMap="com.rsi.rc.ts.module.producer.dao.ProducerInfoMapper.BaseResultMapVO"></association>
+        <association property="deviceAreaVO"
+                     javaType="com.rsi.rc.ts.module.area.vo.DeviceAreaVO"
+                     resultMap="com.rsi.rc.ts.module.area.dao.DeviceAreaMapper.deviceAreaResultMap"></association>
+        <collection property="metricVOs"
+                    ofType="com.rsi.rc.ts.module.metric.vo.MetricVO"
+                    resultMap="com.rsi.rc.ts.module.metric.dao.MetricMapper.BaseResultMapVO1"></collection>
+    </resultMap>
+    
+     <!-- 动态查询设备列表 返回list resultType="com.rsi.rc.ts.module.device.vo.DeviceVO" -->
+    <select id="selectByPrimaryKeyVOList" parameterType="map"
+            resultMap="BaseResultMapVO">
+        select
+        <include refid="Base_Column_List_VO"/>
+
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.producer.dao.ProducerInfoMapper.Base_Column_List_VO"/>
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.metric.dao.MetricMapper.Base_Column_List_vo"/>
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.location.dao.LocationInfoMapper.Base_Column_List_VO"/>
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.addr.dao.AddressInfoMapper.Base_Column_List_VO"/>
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.devicespec.dao.DeviceSpecMapper.Base_Column_List_VO"/>
+        ,<include
+            refid="com.rsi.rc.ts.module.device.dao.DeviceExtraInfoMapper.Base_Column_List_VO"/>
+        ,
+        <include
+                refid="com.rsi.rc.ts.module.area.dao.AreaInfoMapper.Base_Column_List_For_QueryList"/>
+        FROM
+        device_info_t deviceInfo
+        LEFT JOIN metric_info_t metricInfo ON deviceInfo.device_id = metricInfo.device_id
+        LEFT JOIN producer_info_t producerInfo ON deviceInfo.producer_id = producerInfo.producer_id
+        LEFT JOIN location_info_t locationInfo ON deviceInfo.location_id = locationInfo.location_id
+        LEFT JOIN address_info_t addressInfo ON locationInfo.address_id = addressInfo.address_id
+        LEFT JOIN device_spec_t deviceSpec ON deviceInfo.device_spec_id = deviceSpec.device_spec_id
+        LEFT JOIN cmm_organization_t cmm ON deviceInfo.org_id=cmm.org_id
+      LEFT JOIN ts_device_extra_info_t deviceExtraInfo ON deviceInfo.device_id = deviceExtraInfo.device_id
+      LEFT JOIN ts_device_area_t deviceArea  ON deviceInfo.device_id = deviceArea.device_id
+      LEFT JOIN ts_area_info_t areaInfo ON areaInfo.area_id = deviceArea.area_id
+        where deviceInfo.status = 1 
+        <if test="orgId != null and orgId !=''">
+        	and deviceInfo.org_id=#{orgId}
+        </if>
+        <if test="name != null and name !=''">
+            and (deviceInfo.name like '%${name}%'
+            or producerInfo.name like '%${name}%'
+            or deviceInfo.sn like '%${name}%')
+        </if>
+    </select>
+
+（2） 然后把这个关联了很多张表的Map集合BaseResultMapVO1，作为你的SQL中的自定义结果返回集合，然后这里Mybatis会自动根据你配置的resultmap集合
+      和你定义的实体进行自动映射（这里有坑，需要细心看准这个对应关系是不是对不对）
+ 
+（3）.然后需要注意的地方还有，那个在有多个表关联的时候，会出现要查询的字段不知道是哪个表中的，这时就会报错SQL中的字段模糊异常，这里需要注意
+      这个<ref 的SQL和你映射的时候的那个自定义的resultMap对应的SQL字段列，需要保持一致，不然不能映射字段成功
+
+
 
 4. 第四个坑
 Could not set property 'deviceExtraInfoForGetVO' of 'class com.rsi.rc.ts.module.device.vo.DeviceForUpVO' 
