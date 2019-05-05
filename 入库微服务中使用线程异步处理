@@ -3,7 +3,7 @@
 
 
 业务：
-  （一）.首先在入库服务中的controller层用@KafkaListener注解配置属性，消费者需要先监听topic为rc-metric-data的主题，所在的group为rc-ce-group的
+  （一）.首先在入库服务中的controller层用中的方法上使用@KafkaListener注解配置属性，消费者需要先监听topic为rc-metric-data的主题，所在的group为rc-ce-group的
       （1）.把拿到的数据进行转成对应的实体，其实就是实体中套list，然后把列表又在包到Map中，然后使用多线程去处理这个map。（多线程处理map）
           1. 然后遍历map数据，又新建一个multiThreadTasksService类来进行专门去处理map中的每一条数据，
           
